@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lottery</title>
+    <style>
+        .empty {
+            border-radius: 1px;
+            width: 40px;
+            height: 20px;
+            border: solid black 1px;
+            margin-right: 10px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .empty.selected {
+            background-color: green;
+        }
+        hr {
+            border: 1px solid black;
+        }
+        .tickets {
+            display:flex;
+        }
+        .WINNER {
+            margin-top: 0px;
+            text-align: center;
+            font-size: 20px;
+            margin-right: 10px;
+        }
+        .drawer {
+            margin-left: 70px;
+            border-left: 2px solid black;
+            padding-left: 50px;
+        }
+        .winner {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #ffd248;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .runner {
+            margin-top: 15px;
+            margin-left: 15px;
+        }
+        .SECOND {
+            margin-bottom: 0px;
+            text-align: center;
+            font-size: 20px;
+        }
+        .THIRD {
+            margin-bottom: 0px;
+            text-align: center;
+            font-size: 20px;
+        }
+        .second {
+            width: 80px;
+            height: 30px;
+            background-color: #8dcaff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .third {
+            width: 80px;
+            height: 30px;
+            background-color: #72e69d;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .final {
+            margin-left: 70px;
+            margin-top: 30px;
+            border-left: 2px solid black;
+            padding-left: 50px;
+        }
+        .release {
+            width: 150px;
+            padding: 8px;
+            border-radius: 18px;
+            border: 0px;
+            font-weight: bold;
+        }
+        .lock {
+            width: 150px;
+            padding: 8px;
+            border-radius: 18px;
+            border: 0px;
+            font-weight: bold;
+        }
+        .draw {
+            width: 150px;
+            padding: 8px;
+            border-radius: 18px;
+            border: 0px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h4>Released Tickets</h4>
+    <div id="ticketContainer">
+         <button class="empty"></button>
+        <button class="empty"></button>
+        <button class="empty"></button>
+        <button class="empty"></button>
+        <button class="empty"></button>
+        <button class="empty"></button>
+        <button class="empty"></button>
+        <button class="empty"></button> <br>
+        <button class="empty"></button>
+        <button class="empty"></button>
+        <button class="empty"></button>
+        <button class="empty"></button>
+        <button class="empty"></button>
+        <button class="empty"></button>
+        <button class="empty"></button>
+        <button class="empty"></button>
+    </div>
+
+    <hr>
+
+    <div class="tickets">
+        <div>
+            <h4>Tickets Sold</h4>
+          <div class="users">
+            
+          </div>
+        </div>
+
+        <div class="drawer">
+            <h4>Draw of Tickets</h4>
+            <div class="winner"></div>
+            <p class="WINNER"><b>Winner</b></p>
+        </div>
+
+        <div class="runner">
+            <div>
+               <p class="SECOND"><b>Second</b></p>
+               <div class="second"></div>
+            </div>
+
+            <div>
+               <p class="THIRD"><b>Third</b></p>
+               <div class="third"></div>
+            </div>
+        </div>
+
+        <div class="final">
+            <button class="release">Release Tickets</button> <br><br>
+            <button class="lock">Lock Selling</button> <br><br>
+            <button class="draw">Make a Draw</button> <br>
+        </div>
+
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            var emptyButtons = document.getElementsByClassName('empty');
+            var releaseButton = document.querySelector('.release');
+            var lockButton = document.querySelector('.lock');
+            var drawButton = document.querySelector('.draw');
+            var usersDiv = document.querySelector('.users');
+            var winnerDiv = document.querySelector('.winner');
+            var secondDiv = document.querySelector('.second');
+            var thirdDiv = document.querySelector('.third');
+            var selectedNumbers = [];
+            var userCounter = 1;
+            var isLocked = false;
+
+            // Disable the release and lock buttons initially
+            releaseButton.disabled = true;
+            lockButton.addEventListener('click', function() {
+                isLocked = true;
+                releaseButton.disabled = true;
+                lockButton.disabled = true;
+                drawButton.disabled = false;
+            });
+
+            // Disable the draw button initially
+            drawButton.disabled = true;
+
+            for (var i = 0; i < emptyButtons.length; i++) {
+                var randomNum;
+                do {
+                    randomNum = Math.floor(Math.random() * 90) + 10; // Generate a random number between 10 and 99
+                } while (selectedNumbers.includes(randomNum));
+
+                emptyButtons[i].innerText = randomNum;
+                selectedNumbers.push(randomNum);
+
+                emptyButtons[i].addEventListener('click', function() {
+                    if (!isLocked && !this.classList.contains('selected')) {
+                        var number = parseInt(this.innerText);
+                        this.classList.add('selected');
+                        selectedNumbers.push(number);
+
+                        var userParagraph = document.createElement('p');
+                        userParagraph.innerText = 'User ' + userCounter + ': ' + number + ";";
+                        usersDiv.appendChild(userParagraph);
+
+                        userCounter++;
+                    }
+                });
+            }
+
+            drawButton.addEventListener('click', function() {
+                if (isLocked) {
+                    var shuffledNumbers = shuffle(selectedNumbers);
+                    winnerDiv.innerText = shuffledNumbers[0];
+                    secondDiv.innerText = shuffledNumbers[1];
+                    thirdDiv.innerText = shuffledNumbers[2];
+                    winnerDiv.style.fontSize = '50px';
+                    secondDiv.style.fontSize = '25px';
+                    thirdDiv.style.fontSize = '25px';
+
+                    // Highlight the corresponding user divs
+                    var userParagraphs = document.querySelectorAll('.users p');
+                    userParagraphs.forEach(function(paragraph) {
+                        var number = parseInt(paragraph.innerText.split(': ')[1]);
+                        if (number === shuffledNumbers[0]) {
+                            paragraph.style.backgroundColor = '#ffd248';
+                        } else if (number === shuffledNumbers[1]) {
+                            paragraph.style.backgroundColor = '#8dcaff';
+                        } else if (number === shuffledNumbers[2]) {
+                            paragraph.style.backgroundColor = '#72e69d';
+                        }
+                    });
+
+                    releaseButton.disabled = false;
+                    drawButton.disabled = true;
+                }
+            });
+
+            releaseButton.addEventListener('click', function() {
+                releaseButton.disabled = true;
+                lockButton.disabled = false;
+                drawButton.disabled = true;
+                isLocked = false;
+                selectedNumbers = [];
+                userCounter = 1;
+                usersDiv.innerHTML = '';
+                winnerDiv.innerText = '';
+                secondDiv.innerText = '';
+                thirdDiv.innerText = '';
+
+                for (var i = 0; i < emptyButtons.length; i++) {
+                    var randomNum;
+                    do {
+                        randomNum = Math.floor(Math.random() * 90) + 10; // Generate a random number between 10 and 99
+                    } while (selectedNumbers.includes(randomNum));
+
+                    emptyButtons[i].innerText = randomNum;
+                    selectedNumbers.push(randomNum);
+                    emptyButtons[i].classList.remove('selected');
+                }
+            });
+
+            // Function to shuffle an array
+            function shuffle(array) {
+                var currentIndex = array.length;
+                var temporaryValue, randomIndex;
+
+                while (0 !== currentIndex) {
+                    randomIndex = Math.floor(Math.random() * currentIndex);
+                    currentIndex -= 1;
+
+                    temporaryValue = array[currentIndex];
+                    array[currentIndex] = array[randomIndex];
+                    array[randomIndex] = temporaryValue;
+                }
+
+                return array;
+            }
+        });
+    </script>
+</body>
+</html>
